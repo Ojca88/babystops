@@ -1,8 +1,14 @@
 import Link from "next/link";
 import { Baby, Milk, Sofa } from "lucide-react";
 import TripSearchForm from "@/components/TripSearchForm";
+import { getLastCommitDate } from "@/lib/build-info";
 
 export default function HomePage() {
+  const lastCommitDate = getLastCommitDate();
+  const lastCommitLabel = lastCommitDate
+    ? new Intl.DateTimeFormat("es-ES", { dateStyle: "long", timeStyle: "short" }).format(lastCommitDate)
+    : null;
+
   return (
     <div className="relative flex flex-1 flex-col items-center overflow-hidden px-4 py-16 text-center sm:py-24">
       <div
@@ -56,6 +62,12 @@ export default function HomePage() {
             Explora el mapa completo
           </Link>
         </p>
+
+        {lastCommitLabel && (
+          <p className="text-xs text-[var(--foreground)]/40">
+            Última actualización: {lastCommitLabel}
+          </p>
+        )}
       </div>
     </div>
   );
