@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# babystops
 
-## Getting Started
+A road-trip planner for parents: find diaper-change tables, nursing spots,
+family restrooms, and other baby-friendly stops along a driving route, or
+add ones you've discovered yourself.
 
-First, run the development server:
+## Stack
+
+- **Next.js** (App Router, Turbopack) + Tailwind CSS
+- **Supabase** — Postgres database + auth (crowdsourced stops, RLS-protected)
+- **Leaflet / OpenStreetMap** — map rendering (no API key required)
+- **OSRM** — driving directions, proxied server-side (no API key required)
+- **Nominatim** — address geocoding, proxied server-side
+
+## Getting started
 
 ```bash
+npm install
+vercel link          # link to the Vercel project (if not already linked)
+vercel env pull       # pulls Supabase + other env vars into .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Database
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Schema lives in `supabase/migrations/`. Apply it to a linked Supabase
+project with the Supabase CLI:
 
-## Learn More
+```bash
+supabase link --project-ref <ref>
+supabase db push
+```
 
-To learn more about Next.js, take a look at the following resources:
+`supabase/seed.sql` has a few sample stops for local development.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Environment variables
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+See `.env.local.example`. Required:
 
-## Deploy on Vercel
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## How it works
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `/` — trip search (origin + destination)
+- `/trip` — driving route + stops within 5 km of it, filterable by amenity
+- `/map` — browse every submitted stop on one map
+- `/stops/new` — add a stop (requires login); click the map to place a pin
+- `/stops/[id]` — stop detail page
+- `/login`, `/signup` — Supabase email/password auth
+
+Routing and geocoding are proxied through `/api/directions` and
+`/api/geocode` so the provider can be swapped later without touching the
+frontend.
