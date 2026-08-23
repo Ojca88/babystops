@@ -5,14 +5,16 @@ import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import MapClient from "@/components/MapClient";
 import AmenityFilter from "@/components/AmenityFilter";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { createStop } from "@/lib/data/fetchStops";
 import type { Amenity } from "@/lib/data/stops";
 import type { LatLng } from "@/lib/geo";
 
 export default function NewStopPage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null | undefined>(undefined);
+  const [user, setUser] = useState<User | null | undefined>(() =>
+    isSupabaseConfigured() ? undefined : null,
+  );
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -23,6 +25,7 @@ export default function NewStopPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    if (!isSupabaseConfigured()) return;
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
   }, []);
@@ -31,11 +34,11 @@ export default function NewStopPage() {
     e.preventDefault();
     if (!user) return;
     if (!point) {
-      setError("Click the map to set the stop's location.");
+      setError("Toca el mapa para marcar la ubicación de la parada.");
       return;
     }
     if (amenities.length === 0) {
-      setError("Select at least one amenity.");
+      setError("Selecciona al menos un servicio.");
       return;
     }
 
@@ -56,28 +59,31 @@ export default function NewStopPage() {
       );
       router.push(`/stops/${stop.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save stop");
+      setError(err instanceof Error ? err.message : "No se pudo guardar la parada");
       setSubmitting(false);
     }
   }
 
   if (user === undefined) {
-    return <p className="p-4 text-sm text-slate-500">Loading…</p>;
+    return <p className="p-4 text-sm text-[var(--foreground)]/50">Cargando…</p>;
   }
 
   if (user === null) {
     return (
       <div className="flex flex-1 items-center justify-center p-4">
-        <div className="max-w-sm space-y-2 rounded-2xl bg-white p-6 text-center shadow-sm ring-1 ring-slate-200">
-          <h1 className="text-xl font-bold text-slate-900">Log in to add a stop</h1>
-          <p className="text-sm text-slate-600">
-            Contributions are tied to your account so you can edit them later.
+        <div className="max-w-sm space-y-2 rounded-2xl bg-white p-6 text-center shadow-sm ring-1 ring-black/5">
+          <h1 className="text-xl font-bold text-[var(--foreground)]">
+            Inicia sesión para añadir una parada
+          </h1>
+          <p className="text-sm text-[var(--foreground)]/60">
+            Las aportaciones quedan ligadas a tu cuenta para que puedas
+            editarlas más adelante.
           </p>
           <a
             href="/login"
-            className="mt-2 inline-block rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
+            className="mt-2 inline-block rounded-lg bg-[var(--color-coral-500)] px-4 py-2 font-medium text-white hover:bg-[var(--color-coral-600)]"
           >
-            Log in
+            Entrar
           </a>
         </div>
       </div>
@@ -86,7 +92,7 @@ export default function NewStopPage() {
 
   return (
     <div className="grid flex-1 grid-cols-1 gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_360px]">
-      <div className="min-h-[50vh] overflow-hidden rounded-2xl ring-1 ring-slate-200">
+      <div className="min-h-[50vh] overflow-hidden rounded-2xl shadow-sm ring-1 ring-black/5">
         <MapClient
           stops={[]}
           onMapClick={setPoint}
@@ -95,54 +101,57 @@ export default function NewStopPage() {
         />
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <h1 className="text-xl font-bold text-slate-900">Add a stop</h1>
-        <p className="text-sm text-slate-500">
-          Click the map to drop a pin at the stop&apos;s location.
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-3 rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-black/5"
+      >
+        <h1 className="text-xl font-bold text-[var(--foreground)]">Añadir una parada</h1>
+        <p className="text-sm text-[var(--foreground)]/60">
+          Toca el mapa para colocar un pin en la ubicación de la parada.
         </p>
 
-        <label className="block text-sm font-medium text-slate-700">
-          Name
+        <label className="block text-sm font-medium text-[var(--foreground)]/70">
+          Nombre
           <input
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-black/10 px-3 py-2 focus:border-[var(--color-coral-500)] focus:outline-none"
           />
         </label>
 
-        <label className="block text-sm font-medium text-slate-700">
-          Address (optional)
+        <label className="block text-sm font-medium text-[var(--foreground)]/70">
+          Dirección (opcional)
           <input
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-black/10 px-3 py-2 focus:border-[var(--color-coral-500)] focus:outline-none"
           />
         </label>
 
-        <label className="block text-sm font-medium text-slate-700">
-          Notes (optional)
+        <label className="block text-sm font-medium text-[var(--foreground)]/70">
+          Notas (opcional)
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-black/10 px-3 py-2 focus:border-[var(--color-coral-500)] focus:outline-none"
           />
         </label>
 
         <div>
-          <p className="mb-1 text-sm font-medium text-slate-700">Amenities</p>
+          <p className="mb-1 text-sm font-medium text-[var(--foreground)]/70">Servicios</p>
           <AmenityFilter selected={amenities} onChange={setAmenities} />
         </div>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-coral-600)]">{error}</p>}
 
         <button
           type="submit"
           disabled={submitting}
-          className="mt-2 rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700 disabled:opacity-60"
+          className="mt-2 rounded-lg bg-[var(--color-coral-500)] px-4 py-2 font-semibold text-white transition hover:bg-[var(--color-coral-600)] disabled:opacity-60"
         >
-          {submitting ? "Saving…" : "Save stop"}
+          {submitting ? "Guardando…" : "Guardar parada"}
         </button>
       </form>
     </div>

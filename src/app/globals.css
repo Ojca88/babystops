@@ -1,26 +1,69 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fffaf5;
+  --foreground: #2b1d12;
+
+  /* Cálido road-trip: coral, ámbar, teal */
+  --color-coral-50: #fff1ee;
+  --color-coral-100: #ffe0d9;
+  --color-coral-400: #ff8a65;
+  --color-coral-500: #ff6b4a;
+  --color-coral-600: #f2502e;
+
+  --color-amber-100: #fef3c7;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+
+  --color-teal-50: #ecfdf9;
+  --color-teal-100: #cff7ec;
+  --color-teal-400: #2dd4bf;
+  --color-teal-500: #14b8a6;
+  --color-teal-600: #0d9488;
+  --color-teal-900: #0f3d3a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-coral-50: var(--color-coral-50);
+  --color-coral-100: var(--color-coral-100);
+  --color-coral-400: var(--color-coral-400);
+  --color-coral-500: var(--color-coral-500);
+  --color-coral-600: var(--color-coral-600);
+  --color-amber-100: var(--color-amber-100);
+  --color-amber-400: var(--color-amber-400);
+  --color-amber-500: var(--color-amber-500);
+  --color-teal-50: var(--color-teal-50);
+  --color-teal-100: var(--color-teal-100);
+  --color-teal-400: var(--color-teal-400);
+  --color-teal-500: var(--color-teal-500);
+  --color-teal-600: var(--color-teal-600);
+  --color-teal-900: var(--color-teal-900);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+.bg-hero-gradient {
+  background: radial-gradient(
+      circle at 15% 20%,
+      color-mix(in srgb, var(--color-amber-400) 35%, transparent) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 85% 15%,
+      color-mix(in srgb, var(--color-teal-400) 30%, transparent) 0%,
+      transparent 50%
+    ),
+    linear-gradient(160deg, var(--color-coral-50) 0%, #fffaf5 55%, var(--color-teal-50) 100%);
+}
+
+.bg-blob {
+  background: linear-gradient(135deg, var(--color-coral-400), var(--color-amber-400));
+  filter: blur(0px);
 }

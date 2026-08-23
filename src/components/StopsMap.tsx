@@ -8,17 +8,24 @@ import type { Stop } from "@/lib/data/stops";
 import { AMENITY_ICONS, AMENITY_LABELS } from "@/lib/data/stops";
 import type { LatLng } from "@/lib/geo";
 
-// Leaflet's default marker icons reference image paths that break under
-// bundlers; point them at the CDN copy instead of shipping custom assets.
-const markerIcon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-});
+// Custom teardrop pins (SVG, inlined) instead of Leaflet's default blue
+// marker image, to match the app's coral/teal palette without depending
+// on an external image CDN.
+function pinIcon(hex: string) {
+  return L.divIcon({
+    className: "",
+    html: `<svg width="30" height="40" viewBox="0 0 30 40" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 15 25 15 25s15-14.5 15-25C30 6.7 23.3 0 15 0z" fill="${hex}"/>
+      <circle cx="15" cy="15" r="6" fill="white"/>
+    </svg>`,
+    iconSize: [30, 40],
+    iconAnchor: [15, 40],
+    popupAnchor: [0, -36],
+  });
+}
+
+const markerIcon = pinIcon("#ff6b4a");
+const pendingIcon = pinIcon("#14b8a6");
 
 function FitBounds({ points }: { points: LatLng[] }) {
   const map = useMap();
@@ -71,24 +78,24 @@ export default function StopsMap({
     return [];
   }, [route, stops]);
 
-  const initialCenter = center ?? fitPoints[0] ?? { lat: 39.8283, lng: -98.5795 };
+  const initialCenter = center ?? fitPoints[0] ?? { lat: 40.4168, lng: -3.7038 };
 
   return (
     <MapContainer
       center={[initialCenter.lat, initialCenter.lng]}
-      zoom={fitPoints.length > 0 ? 6 : 4}
+      zoom={6}
       scrollWheelZoom
       className={className ?? "h-full w-full"}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> colaboradores'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
       {route && route.length > 1 && (
         <Polyline
           positions={route.map((p) => [p.lat, p.lng])}
-          pathOptions={{ color: "#2563eb", weight: 4, opacity: 0.7 }}
+          pathOptions={{ color: "#ff6b4a", weight: 4, opacity: 0.8 }}
         />
       )}
 
@@ -100,18 +107,22 @@ export default function StopsMap({
               {stop.address && (
                 <p className="text-xs text-gray-600">{stop.address}</p>
               )}
-              <p className="flex flex-wrap gap-1 text-sm">
-                {stop.amenities.map((a) => (
-                  <span key={a} title={AMENITY_LABELS[a]}>
-                    {AMENITY_ICONS[a]}
-                  </span>
-                ))}
+              <p className="flex flex-wrap gap-2 text-xs text-gray-600">
+                {stop.amenities.map((a) => {
+                  const Icon = AMENITY_ICONS[a];
+                  return (
+                    <span key={a} className="flex items-center gap-1" title={AMENITY_LABELS[a]}>
+                      <Icon className="h-3.5 w-3.5" strokeWidth={2.25} />
+                      {AMENITY_LABELS[a]}
+                    </span>
+                  );
+                })}
               </p>
               <a
                 href={`/stops/${stop.id}`}
-                className="text-sm font-medium text-blue-600 hover:underline"
+                className="text-sm font-medium text-teal-600 hover:underline"
               >
-                View details
+                Ver detalles
               </a>
             </div>
           </Popup>
@@ -119,7 +130,7 @@ export default function StopsMap({
       ))}
 
       {pendingPoint && (
-        <Marker position={[pendingPoint.lat, pendingPoint.lng]} icon={markerIcon} />
+        <Marker position={[pendingPoint.lat, pendingPoint.lng]} icon={pendingIcon} />
       )}
 
       <ClickCapture onMapClick={onMapClick} />

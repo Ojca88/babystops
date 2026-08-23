@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Search } from "lucide-react";
 
 export default function TripSearchForm() {
   const router = useRouter();
@@ -18,35 +19,36 @@ export default function TripSearchForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex w-full max-w-xl flex-col gap-3 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:flex-row sm:items-end"
+      className="flex w-full max-w-xl flex-col gap-3 rounded-2xl bg-white p-5 shadow-lg shadow-[var(--color-coral-500)]/5 ring-1 ring-black/5 sm:flex-row sm:items-end"
     >
-      <label className="flex-1 text-sm font-medium text-slate-700">
-        From
+      <label className="flex-1 text-left text-sm font-medium text-[var(--foreground)]/70">
+        Origen
         <input
           value={from}
           onChange={(e) => setFrom(e.target.value)}
-          placeholder="Portland, OR"
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-base focus:border-blue-500 focus:outline-none"
+          placeholder="Madrid"
+          className="mt-1 w-full rounded-lg border border-black/10 px-3 py-2 text-base focus:border-[var(--color-coral-500)] focus:outline-none"
           required
         />
       </label>
 
-      <label className="flex-1 text-sm font-medium text-slate-700">
-        To
+      <label className="flex-1 text-left text-sm font-medium text-[var(--foreground)]/70">
+        Destino
         <input
           value={to}
           onChange={(e) => setTo(e.target.value)}
-          placeholder="Seattle, WA"
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-base focus:border-blue-500 focus:outline-none"
+          placeholder="Valencia"
+          className="mt-1 w-full rounded-lg border border-black/10 px-3 py-2 text-base focus:border-[var(--color-coral-500)] focus:outline-none"
           required
         />
       </label>
 
       <button
         type="submit"
-        className="rounded-lg bg-blue-600 px-5 py-2 font-medium text-white transition hover:bg-blue-700"
+        className="flex items-center justify-center gap-1.5 rounded-lg bg-[var(--color-coral-500)] px-5 py-2 font-semibold text-white transition hover:bg-[var(--color-coral-600)]"
       >
-        Find stops
+        <Search className="h-4 w-4" strokeWidth={2.5} />
+        Buscar paradas
       </button>
     </form>
   );

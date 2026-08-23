@@ -8,8 +8,8 @@ import dynamic from "next/dynamic";
 const MapClient = dynamic(() => import("./StopsMap"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full w-full items-center justify-center bg-slate-100 text-sm text-slate-500">
-      Loading map…
+    <div className="flex h-full w-full items-center justify-center bg-[var(--color-teal-50)] text-sm text-[var(--foreground)]/50">
+      Cargando mapa…
     </div>
   ),
 });

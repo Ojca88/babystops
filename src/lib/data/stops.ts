@@ -1,3 +1,14 @@
+import {
+  Accessibility,
+  Baby,
+  FerrisWheel,
+  type LucideIcon,
+  Milk,
+  Sofa,
+  Toilet,
+  UtensilsCrossed,
+} from "lucide-react";
+
 export const AMENITIES = [
   "diaper_change",
   "nursing",
@@ -11,23 +22,23 @@ export const AMENITIES = [
 export type Amenity = (typeof AMENITIES)[number];
 
 export const AMENITY_LABELS: Record<Amenity, string> = {
-  diaper_change: "Diaper change",
-  nursing: "Nursing area",
-  family_restroom: "Family restroom",
-  food: "Food",
-  playground: "Playground",
-  rest_area: "Rest area",
-  stroller_friendly: "Stroller friendly",
+  diaper_change: "Cambiador",
+  nursing: "Zona de lactancia",
+  family_restroom: "Baño familiar",
+  food: "Comida",
+  playground: "Parque infantil",
+  rest_area: "Área de descanso",
+  stroller_friendly: "Apto para carritos",
 };
 
-export const AMENITY_ICONS: Record<Amenity, string> = {
-  diaper_change: "🧷",
-  nursing: "🍼",
-  family_restroom: "🚻",
-  food: "🍽️",
-  playground: "🛝",
-  rest_area: "🛋️",
-  stroller_friendly: "🧸",
+export const AMENITY_ICONS: Record<Amenity, LucideIcon> = {
+  diaper_change: Baby,
+  nursing: Milk,
+  family_restroom: Toilet,
+  food: UtensilsCrossed,
+  playground: FerrisWheel,
+  rest_area: Sofa,
+  stroller_friendly: Accessibility,
 };
 
 export interface Stop {

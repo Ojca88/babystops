@@ -20,18 +20,19 @@ export default function AmenityFilter({ selected, onChange }: AmenityFilterProps
     <div className="flex flex-wrap gap-2">
       {AMENITIES.map((amenity) => {
         const active = selected.includes(amenity);
+        const Icon = AMENITY_ICONS[amenity];
         return (
           <button
             key={amenity}
             type="button"
             onClick={() => toggle(amenity)}
-            className={`rounded-full border px-3 py-1.5 text-sm transition ${
+            className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
               active
-                ? "border-blue-600 bg-blue-600 text-white"
-                : "border-slate-300 bg-white text-slate-700 hover:border-blue-400"
+                ? "border-[var(--color-coral-500)] bg-[var(--color-coral-500)] text-white shadow-sm"
+                : "border-black/10 bg-white text-[var(--foreground)]/70 hover:border-[var(--color-coral-400)]"
             }`}
           >
-            <span className="mr-1">{AMENITY_ICONS[amenity]}</span>
+            <Icon className="h-4 w-4" strokeWidth={2.25} />
             {AMENITY_LABELS[amenity]}
           </button>
         );

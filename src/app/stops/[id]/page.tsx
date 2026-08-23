@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { AMENITY_ICONS, AMENITY_LABELS, type Stop } from "@/lib/data/stops";
 import MapClient from "@/components/MapClient";
 
@@ -7,6 +7,18 @@ export default async function StopDetailPage({
   params,
 }: PageProps<"/stops/[id]">) {
   const { id } = await params;
+
+  if (!isSupabaseConfigured()) {
+    return (
+      <div className="flex flex-1 items-center justify-center p-4">
+        <p className="rounded-2xl bg-white/80 p-6 text-center text-sm text-[var(--foreground)]/70 shadow-sm ring-1 ring-black/5">
+          Supabase todavía no está configurado, así que no podemos mostrar
+          esta parada.
+        </p>
+      </div>
+    );
+  }
+
   const supabase = await createClient();
   const { data: stop, error } = await supabase
     .from("stops")
@@ -20,7 +32,7 @@ export default async function StopDetailPage({
 
   return (
     <div className="grid flex-1 grid-cols-1 gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_360px]">
-      <div className="min-h-[50vh] overflow-hidden rounded-2xl ring-1 ring-slate-200">
+      <div className="min-h-[50vh] overflow-hidden rounded-2xl shadow-sm ring-1 ring-black/5">
         <MapClient
           stops={[typedStop]}
           center={{ lat: typedStop.lat, lng: typedStop.lng }}
@@ -28,28 +40,35 @@ export default async function StopDetailPage({
         />
       </div>
 
-      <div className="flex flex-col gap-3">
-        <h1 className="text-2xl font-bold text-slate-900">{typedStop.name}</h1>
-        {typedStop.address && <p className="text-slate-600">{typedStop.address}</p>}
+      <div className="flex flex-col gap-3 rounded-2xl bg-white/80 p-5 shadow-sm ring-1 ring-black/5">
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">{typedStop.name}</h1>
+        {typedStop.address && (
+          <p className="text-[var(--foreground)]/60">{typedStop.address}</p>
+        )}
 
         <div className="flex flex-wrap gap-2">
-          {typedStop.amenities.map((a) => (
-            <span
-              key={a}
-              className="flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700"
-            >
-              <span>{AMENITY_ICONS[a]}</span>
-              {AMENITY_LABELS[a]}
-            </span>
-          ))}
+          {typedStop.amenities.map((a) => {
+            const Icon = AMENITY_ICONS[a];
+            return (
+              <span
+                key={a}
+                className="flex items-center gap-1.5 rounded-full bg-[var(--color-teal-50)] px-3 py-1 text-sm font-medium text-[var(--color-teal-900)]"
+              >
+                <Icon className="h-4 w-4" strokeWidth={2} />
+                {AMENITY_LABELS[a]}
+              </span>
+            );
+          })}
         </div>
 
         {typedStop.description && (
-          <p className="whitespace-pre-wrap text-slate-700">{typedStop.description}</p>
+          <p className="whitespace-pre-wrap text-[var(--foreground)]/80">
+            {typedStop.description}
+          </p>
         )}
 
-        <p className="text-xs text-slate-400">
-          Added {new Date(typedStop.created_at).toLocaleDateString()}
+        <p className="text-xs text-[var(--foreground)]/40">
+          Añadida el {new Date(typedStop.created_at).toLocaleDateString("es-ES")}
         </p>
       </div>
     </div>

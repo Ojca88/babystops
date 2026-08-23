@@ -38,11 +38,11 @@ export default function SignupPage() {
   if (submitted) {
     return (
       <div className="flex flex-1 items-center justify-center p-4">
-        <div className="w-full max-w-sm space-y-2 rounded-2xl bg-white p-6 text-center shadow-sm ring-1 ring-slate-200">
-          <h1 className="text-xl font-bold text-slate-900">Check your email</h1>
-          <p className="text-sm text-slate-600">
-            We sent a confirmation link to {email}. Click it to finish setting
-            up your account.
+        <div className="w-full max-w-sm space-y-2 rounded-2xl bg-white p-6 text-center shadow-sm ring-1 ring-black/5">
+          <h1 className="text-xl font-bold text-[var(--foreground)]">Revisa tu email</h1>
+          <p className="text-sm text-[var(--foreground)]/60">
+            Te hemos enviado un enlace de confirmación a {email}. Haz clic en
+            él para terminar de crear tu cuenta.
           </p>
         </div>
       </div>
@@ -53,47 +53,50 @@ export default function SignupPage() {
     <div className="flex flex-1 items-center justify-center p-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200"
+        className="w-full max-w-sm space-y-4 rounded-2xl bg-white p-6 shadow-lg shadow-[var(--color-coral-500)]/5 ring-1 ring-black/5"
       >
-        <h1 className="text-xl font-bold text-slate-900">Sign up</h1>
+        <h1 className="text-xl font-bold text-[var(--foreground)]">Regístrate</h1>
 
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-[var(--foreground)]/70">
           Email
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-black/10 px-3 py-2 focus:border-[var(--color-coral-500)] focus:outline-none"
           />
         </label>
 
-        <label className="block text-sm font-medium text-slate-700">
-          Password
+        <label className="block text-sm font-medium text-[var(--foreground)]/70">
+          Contraseña
           <input
             type="password"
             required
             minLength={6}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-black/10 px-3 py-2 focus:border-[var(--color-coral-500)] focus:outline-none"
           />
         </label>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-coral-600)]">{error}</p>}
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700 disabled:opacity-60"
+          className="w-full rounded-lg bg-[var(--color-coral-500)] px-4 py-2 font-semibold text-white transition hover:bg-[var(--color-coral-600)] disabled:opacity-60"
         >
-          {submitting ? "Signing up…" : "Sign up"}
+          {submitting ? "Registrando…" : "Registrarse"}
         </button>
 
-        <p className="text-center text-sm text-slate-600">
-          Already have an account?{" "}
-          <Link href="/login" className="font-medium text-blue-600 hover:underline">
-            Log in
+        <p className="text-center text-sm text-[var(--foreground)]/60">
+          ¿Ya tienes cuenta?{" "}
+          <Link
+            href="/login"
+            className="font-medium text-[var(--color-teal-600)] hover:underline"
+          >
+            Entrar
           </Link>
         </p>
       </form>
