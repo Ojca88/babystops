@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { AMENITY_ICONS, AMENITY_LABELS, type Stop } from "@/lib/data/stops";
 import MapClient from "@/components/MapClient";
+import StopOwnerActions from "@/components/StopOwnerActions";
 
 export default async function StopDetailPage({
   params,
@@ -70,6 +71,8 @@ export default async function StopDetailPage({
         <p className="text-xs text-[var(--foreground)]/40">
           Añadida el {new Date(typedStop.created_at).toLocaleDateString("es-ES")}
         </p>
+
+        <StopOwnerActions stopId={typedStop.id} createdBy={typedStop.created_by} />
       </div>
     </div>
   );

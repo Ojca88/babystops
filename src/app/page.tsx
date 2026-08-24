@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Baby, Milk, Sofa } from "lucide-react";
+import { Baby, LocateFixed, Milk, Sofa } from "lucide-react";
 import TripSearchForm from "@/components/TripSearchForm";
 import { getLastCommitDate } from "@/lib/build-info";
 
@@ -40,6 +40,14 @@ export default function HomePage() {
         </div>
 
         <TripSearchForm />
+
+        <Link
+          href="/cerca"
+          className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-[var(--color-coral-600)] shadow-sm ring-1 ring-[var(--color-coral-500)]/30 transition hover:bg-[var(--color-coral-50)]"
+        >
+          <LocateFixed className="h-4 w-4" strokeWidth={2.5} />
+          Necesito parar ya
+        </Link>
 
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-[var(--foreground)]/60">
           <span className="flex items-center gap-1.5">
