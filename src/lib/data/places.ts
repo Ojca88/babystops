@@ -1,5 +1,33 @@
 import { createClient } from "@/lib/supabase/client";
 import type { BabyFeatureType } from "@/lib/domain/types";
+import type { PlaceSummaryFeatures } from "@/lib/scoring/place-summary-to-feature-map";
+
+export interface PlaceSummaryRow {
+  id: string;
+  name: string;
+  category: string;
+  lat: number;
+  lng: number;
+  address: string | null;
+  features: PlaceSummaryFeatures;
+}
+
+// Lectura pública (RLS: viewable by everyone) — usada por /lugares para
+// enseñar el Baby Score con datos reales del pipeline de ingesta.
+export async function fetchPlacesWithFeatures(): Promise<PlaceSummaryRow[]> {
+  const supabase = createClient();
+  // El pipeline de ingesta deja los lugares en 'needs_review' hasta que se
+  // revisan a mano (doc. 10) — se incluyen igualmente aquí porque hoy es
+  // prácticamente todo lo que hay; solo se excluyen duplicados/cerrados.
+  const { data, error } = await supabase
+    .from("place_summary")
+    .select("id, name, category, lat, lng, address, features")
+    .in("status", ["active", "needs_review"])
+    .order("name");
+
+  if (error) throw error;
+  return data as PlaceSummaryRow[];
+}
 
 export interface NewPlaceInput {
   name: string;

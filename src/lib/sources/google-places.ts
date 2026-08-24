@@ -1,4 +1,5 @@
 import type { Evidence } from "@/lib/domain/types";
+import { fetchWithRetry } from "@/lib/http/fetch-with-retry";
 
 // Subconjunto de campos de Google Places API (New) Place Details que se
 // mapean por regla directa, sin LLM — docs/baby-stops/03-fuentes-y-extraccion.md
@@ -58,22 +59,26 @@ export async function searchPlacesText(
   center: { lat: number; lng: number },
   radiusMeters: number,
 ): Promise<GooglePlaceSearchResult[]> {
-  const response = await fetch("https://places.googleapis.com/v1/places:searchText", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Goog-Api-Key": requireApiKey(),
-      "X-Goog-FieldMask": "places.id,places.displayName,places.location",
-    },
-    body: JSON.stringify({
-      textQuery: query,
-      locationBias: {
-        circle: { center: { latitude: center.lat, longitude: center.lng }, radius: radiusMeters },
+  const response = await fetchWithRetry(() =>
+    fetch("https://places.googleapis.com/v1/places:searchText", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": requireApiKey(),
+        "X-Goog-FieldMask": "places.id,places.displayName,places.location",
       },
+      body: JSON.stringify({
+        textQuery: query,
+        locationBias: {
+          circle: { center: { latitude: center.lat, longitude: center.lng }, radius: radiusMeters },
+        },
+      }),
     }),
-  });
+  );
 
-  if (!response.ok) throw new Error(`Places Text Search falló: ${response.status}`);
+  if (!response.ok) {
+    throw new Error(`Places Text Search falló: ${response.status} — ${await response.text()}`);
+  }
   const data = (await response.json()) as { places?: GooglePlaceSearchResult[] };
   return data.places ?? [];
 }
@@ -96,13 +101,17 @@ const DETAILS_FIELD_MASK = [
 ].join(",");
 
 export async function getPlaceDetails(placeId: string): Promise<GooglePlaceDetails> {
-  const response = await fetch(`https://places.googleapis.com/v1/places/${placeId}`, {
-    headers: {
-      "X-Goog-Api-Key": requireApiKey(),
-      "X-Goog-FieldMask": DETAILS_FIELD_MASK,
-    },
-  });
+  const response = await fetchWithRetry(() =>
+    fetch(`https://places.googleapis.com/v1/places/${placeId}`, {
+      headers: {
+        "X-Goog-Api-Key": requireApiKey(),
+        "X-Goog-FieldMask": DETAILS_FIELD_MASK,
+      },
+    }),
+  );
 
-  if (!response.ok) throw new Error(`Place Details falló para ${placeId}: ${response.status}`);
+  if (!response.ok) {
+    throw new Error(`Place Details falló para ${placeId}: ${response.status} — ${await response.text()}`);
+  }
   return (await response.json()) as GooglePlaceDetails;
 }

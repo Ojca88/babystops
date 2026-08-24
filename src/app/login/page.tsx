@@ -11,17 +11,22 @@ export default function LoginPage() {
     setSubmitting(true);
     setError(null);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
 
-    if (error) {
+      if (error) {
+        setError(error.message);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo conectar con Google");
+    } finally {
       setSubmitting(false);
-      setError(error.message);
     }
   }
 

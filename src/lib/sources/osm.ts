@@ -1,4 +1,5 @@
 import type { Evidence } from "@/lib/domain/types";
+import { fetchWithRetry } from "@/lib/http/fetch-with-retry";
 
 // Tags OSM relevantes de Overpass — docs/baby-stops/03-fuentes-y-extraccion.md
 export interface OsmTags {
@@ -94,14 +95,16 @@ export async function queryOverpassNearby(
     out center tags;
   `;
 
-  const response = await fetch(OVERPASS_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "User-Agent": "BabyStopsBot/0.1 (+https://babystops.app)",
-    },
-    body: `data=${encodeURIComponent(query)}`,
-  });
+  const response = await fetchWithRetry(() =>
+    fetch(OVERPASS_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "BabyStopsBot/0.1 (+https://babystops.app)",
+      },
+      body: `data=${encodeURIComponent(query)}`,
+    }),
+  );
 
   if (!response.ok) throw new Error(`Overpass falló: ${response.status}`);
   const data = (await response.json()) as { elements?: OverpassElement[] };
